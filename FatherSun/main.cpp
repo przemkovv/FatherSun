@@ -1,7 +1,10 @@
 
+#define _CRT_SECURE_NO_WARNINGS
+#define _SCL_SECURE_NO_WARNINGS
 //#include <fmt/format.h>
 
 #include <spdlog/spdlog.h>
+#include "crow_all.h"
 
 
 int64_t fibonnacci_number(int n)
@@ -32,15 +35,23 @@ int main()
 	logger->error("Mieliœmy opóŸnienie");
 	logger->info("{}", fibonnacci_number(0));
 
-	logger->info("{}", fibonnacci_number(1));
-	logger->info("{}", fibonnacci_number(2));
+	crow::SimpleApp app;
 
-	logger->info("{}", fibonnacci_number(3));
-	logger->info("{}", fibonnacci_number(4));
-	logger->info("{}", fibonnacci_number(5));
-	logger->info("{}", fibonnacci_number(6));
+	CROW_ROUTE(app, "/hello")(
+		[]()
+	{
+		return fibonnacci_number(5);
+	}
+	);
 
+	CROW_ROUTE(app, "/hello/<int>")(
+		[](int n)
+	{
+		return fibonnacci_number(n);
+	}
+	);
 
+	app.port(8080).multithreaded().run();
 
 	return 0;
 }
