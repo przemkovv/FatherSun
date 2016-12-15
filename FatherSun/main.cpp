@@ -3,8 +3,10 @@
 #define _SCL_SECURE_NO_WARNINGS
 //#include <fmt/format.h>
 
-#include <spdlog/spdlog.h>
+#include "json.h"
 #include "crow_all.h"
+#include <spdlog/spdlog.h>
+
 #include <chrono>
 #include <thread>
 #include <map>
@@ -52,14 +54,17 @@ boost::optional<int64_t> find_fibonnaci_number(FibonacciNumbers &f_numbers, int 
 
 std::string get_all_numbers(const FibonacciNumbers &fibonnaci_numbers)
 {
-	std::string all_numbers;
+	nlohmann::json all_numbers;
 
 	for (const auto & number : fibonnaci_numbers)
 	{
-		all_numbers += fmt::format("{},", number.second);
+		all_numbers.push_back({
+			{ "n", number.first }, 
+			{ "number", number.second } 
+		});
 	}
 
-	return all_numbers;
+	return all_numbers.dump(2);
 	
 }
 
