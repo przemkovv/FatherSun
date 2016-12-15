@@ -40,14 +40,16 @@ int main()
 	CROW_ROUTE(app, "/hello")(
 		[]()
 	{
-		return fibonnacci_number(5);
+
+		return fmt::format("{}", fibonnacci_number(5));
 	}
 	);
 
 	CROW_ROUTE(app, "/hello/<int>")(
 		[](int n)
 	{
-		return fibonnacci_number(n);
+		return fmt::format("{}", fibonnacci_number(n));
+
 	}
 	);
 
