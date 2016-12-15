@@ -12,6 +12,8 @@
 #include <boost/optional.hpp>
 
 
+using FibonacciNumbers = std::map<int, int64_t>;
+
 int64_t fibonnacci_number(int n)
 {
 	using namespace std::chrono_literals;
@@ -30,7 +32,7 @@ int64_t fibonnacci_number(int n)
 }
 
 
-boost::optional<int64_t> find_fibonnaci_number(std::map<int, int64_t> &f_numbers, int n)
+boost::optional<int64_t> find_fibonnaci_number(FibonacciNumbers &f_numbers, int n)
 {
 	
 	auto it = std::find_if(f_numbers.begin(), f_numbers.end(),
@@ -47,6 +49,20 @@ boost::optional<int64_t> find_fibonnaci_number(std::map<int, int64_t> &f_numbers
 		return it->second;
 	}
 }
+
+std::string get_all_numbers(const FibonacciNumbers &fibonnaci_numbers)
+{
+	std::string all_numbers;
+
+	for (const auto & number : fibonnaci_numbers)
+	{
+		all_numbers += fmt::format("{},", number.second);
+	}
+
+	return all_numbers;
+	
+}
+
 
 int main()
 {
@@ -65,7 +81,7 @@ int main()
 
 	crow::SimpleApp app;
 
-	CROW_ROUTE(app, "/fibo_numbers/").methods("POST"_method) (
+	CROW_ROUTE(app, "/fibo_numbers/").methods("POST"_method, "GET"_method) (
 		//[&](const crow::request& req)
 		[&logger,&fibonnaci_numbers](const crow::request& req)
 	{
@@ -75,6 +91,10 @@ int main()
 			int n = stoi(req.body);
 			fibonnaci_numbers[n] = fibonnacci_number(n);
 			return crow::response(200);
+		}
+		else if (req.method == "GET"_method) {
+			auto lista_wszystkich = get_all_numbers(fibonnaci_numbers);
+			return crow::response(200, lista_wszystkich);
 		} else
 		{
 			return crow::response(404);
