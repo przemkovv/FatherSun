@@ -9,6 +9,8 @@
 #include <thread>
 #include <map>
 
+#include <boost/optional.hpp>
+
 
 int64_t fibonnacci_number(int n)
 {
@@ -25,6 +27,25 @@ int64_t fibonnacci_number(int n)
 		}
 	std::this_thread::sleep_for(3s);
 	return f2;
+}
+
+
+boost::optional<int64_t> find_fibonnaci_number(std::map<int, int64_t> &f_numbers, int n)
+{
+	
+	auto it = std::find_if(f_numbers.begin(), f_numbers.end(),
+		[&n](const auto &para)
+	{
+		return (para.first == n);
+	});
+
+	if (it == f_numbers.end())
+	{
+		return{};
+	} else
+	{
+		return it->second;
+	}
 }
 
 int main()
@@ -63,10 +84,17 @@ int main()
 		
 		);
 	CROW_ROUTE(app, "/fibo_numbers/<int>")(
-		[](int n)
+		[&fibonnaci_numbers](int n)
 	{
-
-		return "";
+		auto number = find_fibonnaci_number(fibonnaci_numbers, n);
+			if(number)
+			{
+				auto response = fmt::format("{}", number.get());
+				return crow::response(200, response);
+			} else
+			{
+				return crow::response(404);
+			}
 	}
 	);
 
